@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useMemo, useOptimistic, useState, useTransition } from "react";
+import { useCallback, useMemo, useOptimistic, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar, displayName } from "@/components/Avatar";
@@ -8,6 +8,7 @@ import { CityAutocomplete, type CityResult } from "@/components/CityAutocomplete
 import { Countdown } from "@/components/Countdown";
 import { LocalTime } from "@/components/LocalTime";
 import { Thumb } from "@/components/Thumb";
+import { Toast } from "@/components/Toast";
 import { errorMessage } from "@/lib/utils";
 import type { Destination, Member, Trip, Vote } from "@/lib/types";
 
@@ -35,7 +36,11 @@ export function VoteBoard({
 }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  // `id` changes on every message so repeating the same error restarts the toast's timer
+  const [toast, setToast] = useState<{ text: string; id: number } | null>(null);
+  const setError = (text: string | null) =>
+    setToast((prev) => (text ? { text, id: (prev?.id ?? 0) + 1 } : null));
+  const dismissToast = useCallback(() => setToast(null), []);
   const [adding, setAdding] = useState<string | null>(null);
 
   const [optimisticVotes, applyVote] = useOptimistic(votes, (state: Vote[], action: VoteAction) => {
@@ -226,7 +231,7 @@ export function VoteBoard({
         </section>
       )}
 
-      {error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+      {toast && <Toast key={toast.id} message={toast.text} onDismiss={dismissToast} />}
 
       {/* ---------- Options ---------- */}
       <section className="space-y-3">
