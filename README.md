@@ -22,7 +22,7 @@ A Next.js + Supabase web app for planning group trips:
 
 1. Create a project at <https://supabase.com/dashboard>.
 2. Open **SQL Editor → New query**, paste all of [`supabase/schema.sql`](supabase/schema.sql), and click **Run**.
-3. Go to **Project Settings → API** and copy the **Project URL** and the **anon / publishable key**.
+3. Copy the **Project URL** (Project Settings → Data API) and the **publishable key** (`sb_publishable_…`, Project Settings → API Keys). Do not use the legacy `anon` key or any secret key.
 
 ### 2. Run locally
 
@@ -56,7 +56,7 @@ npm run dev                  # http://localhost:3000
 ### 4. Deploy to Vercel
 
 1. Import this GitHub repo at <https://vercel.com/new>. The framework is detected as Next.js.
-2. Add the environment variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+2. Add the environment variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 3. Deploy, then put the production URL into Supabase's Site URL and Redirect URLs (step 3).
 
 ## Project layout
