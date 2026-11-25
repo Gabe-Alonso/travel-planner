@@ -5,6 +5,19 @@ import { safeNext } from "@/lib/utils";
 const PUBLIC_PATHS = ["/login", "/auth", "/privacy", "/terms"];
 
 export async function updateSession(request: NextRequest) {
+  // Explain misconfiguration clearly instead of failing with a generic 500.
+  const missing = [
+    !process.env.NEXT_PUBLIC_SUPABASE_URL && "NEXT_PUBLIC_SUPABASE_URL",
+    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY && "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  ].filter(Boolean);
+  if (missing.length) {
+    return new NextResponse(
+      `Wayfarers is not configured yet.\n\nMissing environment variables: ${missing.join(", ")}\n\n` +
+        "Add them in Vercel → Project → Settings → Environment Variables (for Production), then redeploy.",
+      { status: 500, headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
