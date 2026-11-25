@@ -80,7 +80,7 @@ export default async function HomePage() {
                     </div>
                   </div>
                   {isLeader && (
-                    <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-stone-800">
+                    <span className="absolute right-3 top-3 rounded-full bg-surface/90 px-2 py-0.5 text-xs font-medium text-stone-800">
                       👑 Group Leader
                     </span>
                   )}

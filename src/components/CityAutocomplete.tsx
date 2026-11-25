@@ -117,7 +117,7 @@ export function CityAutocomplete({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-20 mt-1 max-h-80 w-full overflow-auto rounded-xl border border-stone-200 bg-white py-1 shadow-lg"
+          className="absolute z-20 mt-1 max-h-80 w-full overflow-auto rounded-xl border border-stone-200 bg-surface py-1 shadow-lg"
         >
           {shown.length === 0 && !loading && (
             <li className="px-3 py-2 text-sm text-stone-500">No matching cities</li>

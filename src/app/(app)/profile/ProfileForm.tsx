@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/Avatar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { errorMessage } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
@@ -52,6 +53,14 @@ export function ProfileForm({
           {msg.text}
         </p>
       )}
+
+      <section className="card flex flex-wrap items-center justify-between gap-4 p-6">
+        <div>
+          <h2 className="font-semibold">Appearance</h2>
+          <p className="text-sm text-stone-500">Saved on this device. “System” follows your device setting.</p>
+        </div>
+        <ThemeToggle />
+      </section>
 
       <form onSubmit={saveProfile} className="card space-y-4 p-6">
         <div className="flex items-center gap-4">

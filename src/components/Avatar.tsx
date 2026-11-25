@@ -35,7 +35,7 @@ export function Avatar({
     .join("")
     .toUpperCase();
   const style = { width: size, height: size, fontSize: Math.max(10, size * 0.4) };
-  const ringCls = ring ? "ring-2 ring-white" : "";
+  const ringCls = ring ? "ring-2 ring-surface" : "";
 
   if (profile?.avatar_url) {
     return (
@@ -73,7 +73,7 @@ export function AvatarStack({ profiles, size = 28, max = 6 }: { profiles: (Profi
       {extra > 0 && (
         <span
           style={{ width: size, height: size }}
-          className="inline-flex items-center justify-center rounded-full bg-stone-200 text-xs font-medium text-stone-700 ring-2 ring-white"
+          className="inline-flex items-center justify-center rounded-full bg-stone-200 text-xs font-medium text-stone-700 ring-2 ring-surface"
         >
           +{extra}
         </span>

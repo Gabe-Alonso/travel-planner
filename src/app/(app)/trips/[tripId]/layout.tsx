@@ -14,7 +14,7 @@ export default async function TripLayout({ children, params }: LayoutProps<"/tri
   return (
     <>
       <RealtimeRefresher tripId={trip.id} />
-      <div className="border-b border-stone-200 bg-white">
+      <div className="border-b border-stone-200 bg-surface">
         <div className="mx-auto max-w-6xl px-4 pt-6">
           <Link href="/" className="text-sm text-stone-500 hover:text-stone-800">
             ← All trips

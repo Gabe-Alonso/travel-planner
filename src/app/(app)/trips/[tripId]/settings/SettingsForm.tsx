@@ -255,7 +255,7 @@ export function SettingsForm({
         description="Everyone gets the same number of votes and can spread them across different destinations (one vote per destination)."
       >
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center overflow-hidden rounded-lg border border-stone-300 bg-white shadow-sm">
+          <div className="flex items-center overflow-hidden rounded-lg border border-stone-300 bg-surface shadow-sm">
             <button
               type="button"
               className="px-3 py-2 text-lg leading-none hover:bg-stone-50 disabled:opacity-40"

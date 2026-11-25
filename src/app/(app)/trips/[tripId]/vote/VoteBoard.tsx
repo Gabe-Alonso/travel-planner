@@ -152,7 +152,7 @@ export function VoteBoard({
             <h2 className="mt-2 text-4xl font-bold sm:text-5xl">{decided.name}</h2>
             <p className="mt-1 text-lg text-white/85">{[decided.region, decided.country].filter(Boolean).join(", ")}</p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <Link href={`/trips/${trip.id}/places`} className="btn bg-white text-stone-900 hover:bg-stone-100">
+              <Link href={`/trips/${trip.id}/places`} className="btn bg-surface text-stone-900 hover:bg-stone-100">
                 📍 Plan places to go
               </Link>
               <Link href={`/trips/${trip.id}/housing`} className="btn bg-white/15 text-white backdrop-blur hover:bg-white/25">
@@ -167,7 +167,7 @@ export function VoteBoard({
           </div>
         </section>
       ) : (
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-sky-800 p-6 text-white shadow-lg sm:p-8">
+        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-teal-700 to-sky-800 p-6 text-white shadow-lg sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div>
               <h2 className="text-2xl font-bold">Where should we go?</h2>

@@ -67,7 +67,7 @@ export function LinkBoard({
           {kind === "places" && categoriesInUse.length > 1 && (
             <>
               <button
-                className={`rounded-full px-3 py-1 text-sm ${!filter ? "bg-stone-900 text-white" : "bg-white text-stone-700 ring-1 ring-stone-200"}`}
+                className={`rounded-full px-3 py-1 text-sm ${!filter ? "bg-brand-600 text-white" : "bg-surface text-stone-700 ring-1 ring-stone-200"}`}
                 onClick={() => setFilter(null)}
               >
                 All ({items.length})
@@ -75,7 +75,7 @@ export function LinkBoard({
               {categoriesInUse.map((c) => (
                 <button
                   key={c}
-                  className={`rounded-full px-3 py-1 text-sm ${filter === c ? "bg-stone-900 text-white" : "bg-white text-stone-700 ring-1 ring-stone-200"}`}
+                  className={`rounded-full px-3 py-1 text-sm ${filter === c ? "bg-brand-600 text-white" : "bg-surface text-stone-700 ring-1 ring-stone-200"}`}
                   onClick={() => setFilter(c)}
                 >
                   {c}
@@ -137,7 +137,7 @@ export function LinkBoard({
                   </span>
                 )}
                 {item.price && (
-                  <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2.5 py-0.5 text-sm font-semibold text-stone-900 shadow">
+                  <span className="absolute left-2 top-2 rounded-full bg-surface/95 px-2.5 py-0.5 text-sm font-semibold text-stone-900 shadow">
                     {item.price}
                   </span>
                 )}

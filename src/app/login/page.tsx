@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--color-brand-100),_transparent_60%),radial-gradient(ellipse_at_bottom_right,_#fde8c8,_transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--color-brand-100),_transparent_60%),radial-gradient(ellipse_at_bottom_right,_var(--glow-warm),_transparent_55%)]" />
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="text-5xl">🧭</div>
