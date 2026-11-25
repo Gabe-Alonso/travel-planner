@@ -17,6 +17,16 @@ export async function updateSession(request: NextRequest) {
       { status: 500, headers: { "content-type": "text/plain; charset=utf-8" } },
     );
   }
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  if (!/^https?:\/\/[^\s"'/]+\.[^\s"'/]+\/?$/.test(url)) {
+    // The project URL is public (it ships to every browser), so it's safe to echo back.
+    return new NextResponse(
+      `Wayfarers is not configured correctly.\n\nNEXT_PUBLIC_SUPABASE_URL should look like https://abcdefghijklmnop.supabase.co\n` +
+        `but it is currently: ${JSON.stringify(url)}\n\n` +
+        "Fix it in Vercel → Project → Settings → Environment Variables, then redeploy.",
+      { status: 500, headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
 
   let response = NextResponse.next({ request });
 
