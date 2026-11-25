@@ -16,6 +16,7 @@ export type Trip = {
   invite_code: string;
   vote_deadline: string | null;
   decided_destination_id: string | null;
+  votes_per_person: number;
   created_by: string | null;
   created_at: string;
 };

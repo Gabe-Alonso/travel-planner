@@ -5,7 +5,7 @@ A Next.js + Supabase web app for planning group trips:
 - **Sign in** with Google, Facebook, or email and password (Supabase Auth). Every page except login needs you to be signed in.
 - **Home page** lists your trips. Anyone can create a trip, and the creator becomes the trip's **👑 Group Leader**.
 - **Invite links**: share `/invite/<code>` and anyone who opens it and signs in joins the trip.
-- **Vote** on the destination. As you type a city name, a dropdown suggests matches (Open-Meteo geocoding), and each option gets a Wikipedia photo. Voters' profile pictures appear next to the option they picked, and a countdown runs to the leader's deadline. When the timer ends, the option with the most votes wins automatically; if there's a tie, the leader picks.
+- **Vote** on the destination. As you type a city name, a dropdown suggests matches (Open-Meteo geocoding), and each option gets a Wikipedia photo. Voters' profile pictures appear next to the option they picked, and each person gets a leader-set number of votes (1–10) to spread across options, and a countdown runs to the leader's deadline. When the timer ends, the option with the most votes wins automatically; if there's a tie, the leader picks.
 - **Places** to go and **Housing** options: paste a link (Airbnb, Booking.com, a hotel site, Google Maps…) and the app pulls in the listing's thumbnail and title. Click a card to open the listing.
 - **Settings** (Group Leaders only): edit trip details, set or extend the voting deadline, override the chosen destination or reopen voting, promote/demote/remove members, reset the invite link, and delete the trip.
 - Votes and lists update live (Supabase Realtime).
@@ -21,7 +21,7 @@ A Next.js + Supabase web app for planning group trips:
 ### 1. Supabase project
 
 1. Create a project at <https://supabase.com/dashboard>.
-2. Open **SQL Editor → New query**, paste all of [`supabase/schema.sql`](supabase/schema.sql), and click **Run**.
+2. Open **SQL Editor → New query**, paste all of [`supabase/schema.sql`](supabase/schema.sql), and click **Run**. (`schema.sql` always contains everything. If you set up the database earlier, run any newer files in [`supabase/migrations/`](supabase/migrations) instead.)
 3. Copy the **Project URL** (Project Settings → Data API) and the **publishable key** (`sb_publishable_…`, Project Settings → API Keys). Do not use the legacy `anon` key or any secret key.
 
 ### 2. Run locally

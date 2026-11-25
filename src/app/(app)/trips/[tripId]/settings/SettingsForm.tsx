@@ -49,6 +49,24 @@ export function SettingsForm({
   const [endDate, setEndDate] = useState(trip.end_date ?? "");
   const [deadline, setDeadline] = useState(() => toLocalInput(trip.vote_deadline));
   const [decidedId, setDecidedId] = useState(trip.decided_destination_id ?? "");
+  const currentLimit = trip.votes_per_person ?? 1;
+  const [votesPerPerson, setVotesPerPerson] = useState(currentLimit);
+
+  const saveVoteLimit = () => {
+    if (
+      votesPerPerson < currentLimit &&
+      !confirm(
+        `Lower to ${votesPerPerson} ${votesPerPerson === 1 ? "vote" : "votes"} per person? ` +
+          "Anyone who has already used more will lose their most recent extra votes.",
+      )
+    ) {
+      return;
+    }
+    run(
+      () => supabase.from("trips").update({ votes_per_person: votesPerPerson }).eq("id", trip.id),
+      `Everyone now gets ${votesPerPerson} ${votesPerPerson === 1 ? "vote" : "votes"}.`,
+    );
+  };
 
   async function run(fn: () => PromiseLike<{ error: unknown }>, success: string) {
     setBusy(true);
@@ -229,6 +247,45 @@ export function SettingsForm({
               </button>
             ))}
           </div>
+        </div>
+      </Section>
+
+      <Section
+        title="🗳️ Votes per person"
+        description="Everyone gets the same number of votes and can spread them across different destinations (one vote per destination)."
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center overflow-hidden rounded-lg border border-stone-300 bg-white shadow-sm">
+            <button
+              type="button"
+              className="px-3 py-2 text-lg leading-none hover:bg-stone-50 disabled:opacity-40"
+              disabled={busy || votesPerPerson <= 1}
+              onClick={() => setVotesPerPerson((v) => Math.max(1, v - 1))}
+              aria-label="Fewer votes"
+            >
+              −
+            </button>
+            <span className="min-w-12 text-center text-lg font-semibold tabular-nums" aria-live="polite">
+              {votesPerPerson}
+            </span>
+            <button
+              type="button"
+              className="px-3 py-2 text-lg leading-none hover:bg-stone-50 disabled:opacity-40"
+              disabled={busy || votesPerPerson >= 10}
+              onClick={() => setVotesPerPerson((v) => Math.min(10, v + 1))}
+              aria-label="More votes"
+            >
+              +
+            </button>
+          </div>
+          <span className="text-sm text-stone-500">{votesPerPerson === 1 ? "vote" : "votes"} each</span>
+          <button
+            className="btn btn-primary"
+            disabled={busy || votesPerPerson === currentLimit}
+            onClick={saveVoteLimit}
+          >
+            Save
+          </button>
         </div>
       </Section>
 

@@ -11,7 +11,10 @@ import { Thumb } from "@/components/Thumb";
 import { errorMessage } from "@/lib/utils";
 import type { Destination, Member, Trip, Vote } from "@/lib/types";
 
-type VoteAction = { type: "vote"; destinationId: string } | { type: "unvote" };
+type VoteAction =
+  | { type: "add"; destinationId: string }
+  | { type: "remove"; destinationId: string }
+  | { type: "swap"; from: string; to: string };
 
 export function VoteBoard({
   trip,
@@ -36,14 +39,17 @@ export function VoteBoard({
   const [adding, setAdding] = useState<string | null>(null);
 
   const [optimisticVotes, applyVote] = useOptimistic(votes, (state: Vote[], action: VoteAction) => {
-    const others = state.filter((v) => v.user_id !== userId);
-    return action.type === "vote"
-      ? [...others, { trip_id: trip.id, user_id: userId, destination_id: action.destinationId }]
-      : others;
+    const mine = (d: string) => (v: Vote) => v.user_id === userId && v.destination_id === d;
+    const vote = (d: string): Vote => ({ trip_id: trip.id, user_id: userId, destination_id: d });
+    if (action.type === "add") return [...state, vote(action.destinationId)];
+    if (action.type === "remove") return state.filter((v) => !mine(action.destinationId)(v));
+    return [...state.filter((v) => !mine(action.from)(v)), vote(action.to)];
   });
 
   const profileById = useMemo(() => new Map(members.map((m) => [m.user_id, m.profile])), [members]);
-  const myVote = optimisticVotes.find((v) => v.user_id === userId)?.destination_id ?? null;
+  const limit = Math.max(1, trip.votes_per_person ?? 1);
+  const myVotes = new Set(optimisticVotes.filter((v) => v.user_id === userId).map((v) => v.destination_id));
+  const votesLeft = Math.max(0, limit - myVotes.size);
 
   const ranked = useMemo(() => {
     const counts = new Map<string, string[]>();
@@ -62,16 +68,40 @@ export function VoteBoard({
   function castVote(destinationId: string) {
     if (!votingOpen) return;
     setError(null);
-    const removing = myVote === destinationId;
+
+    let action: VoteAction;
+    if (myVotes.has(destinationId)) {
+      action = { type: "remove", destinationId };
+    } else if (votesLeft > 0) {
+      action = { type: "add", destinationId };
+    } else if (limit === 1) {
+      // Single-vote mode: tapping another option moves your vote
+      action = { type: "swap", from: [...myVotes][0], to: destinationId };
+    } else {
+      setError(`You've used all ${limit} of your votes — tap one of your picks to take a vote back first.`);
+      return;
+    }
+
     startTransition(async () => {
-      applyVote(removing ? { type: "unvote" } : { type: "vote", destinationId });
-      const supabase = createClient();
-      const { error } = removing
-        ? await supabase.from("votes").delete().eq("trip_id", trip.id).eq("user_id", userId)
-        : await supabase
-            .from("votes")
-            .upsert({ trip_id: trip.id, user_id: userId, destination_id: destinationId }, { onConflict: "trip_id,user_id" });
-      if (error) setError(errorMessage(error));
+      applyVote(action);
+      const votesTable = createClient().from("votes");
+      const del = (d: string) =>
+        createClient().from("votes").delete().eq("trip_id", trip.id).eq("user_id", userId).eq("destination_id", d);
+      let result;
+      if (action.type === "remove") {
+        result = await del(action.destinationId);
+      } else {
+        if (action.type === "swap") {
+          const removed = await del(action.from);
+          if (removed.error) result = removed;
+        }
+        result ??= await votesTable.insert({
+          trip_id: trip.id,
+          user_id: userId,
+          destination_id: action.type === "add" ? action.destinationId : action.to,
+        });
+      }
+      if (result.error) setError(errorMessage(result.error));
       router.refresh();
     });
   }
@@ -141,6 +171,9 @@ export function VoteBoard({
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div>
               <h2 className="text-2xl font-bold">Where should we go?</h2>
+              {votingOpen && limit > 1 && (
+                <p className="mt-1 font-medium text-white">🗳️ Everyone gets {limit} votes — spread them across your favorites.</p>
+              )}
               {votingOpen && trip.vote_deadline && (
                 <p className="mt-1 text-white/85">
                   Voting closes <LocalTime iso={trip.vote_deadline} />
@@ -202,7 +235,23 @@ export function VoteBoard({
             {ranked.length ? `The options (${ranked.length})` : "No options yet"}
           </h3>
           {votingOpen && ranked.length > 0 && (
-            <span className="text-sm text-stone-500">{myVote ? "Tap your pick again to un-vote" : "Tap one to vote"}</span>
+            <div className="flex items-center gap-2 text-sm text-stone-600" title="Tap a pick again to take that vote back">
+              <span className="flex gap-1" aria-hidden>
+                {Array.from({ length: limit }, (_, i) => (
+                  <span
+                    key={i}
+                    className={`h-2.5 w-2.5 rounded-full ${i < votesLeft ? "bg-brand-500" : "bg-stone-300"}`}
+                  />
+                ))}
+              </span>
+              {limit === 1
+                ? myVotes.size
+                  ? "Tap another option to move your vote"
+                  : "You have 1 vote"
+                : votesLeft
+                  ? `${votesLeft} of ${limit} votes left`
+                  : `All ${limit} votes used`}
+            </div>
           )}
         </div>
 
@@ -214,8 +263,9 @@ export function VoteBoard({
         )}
 
         {ranked.map(({ dest, voters }) => {
-          const mine = myVote === dest.id;
-          const pct = optimisticVotes.length ? Math.round((voters.length / optimisticVotes.length) * 100) : 0;
+          const mine = myVotes.has(dest.id);
+          // Share of the crew that picked this option
+          const pct = members.length ? Math.round((voters.length / members.length) * 100) : 0;
           const isTop = voters.length > 0 && voters.length === topCount && leaders.length === 1;
           const isDecided = decided?.id === dest.id;
           const canRemove = (dest.added_by === userId && votingOpen) || isLeader;
