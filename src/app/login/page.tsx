@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { safeNext } from "@/lib/utils";
 import { LoginForm } from "./LoginForm";
 
@@ -25,6 +26,11 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="card p-6 sm:p-8">
           <LoginForm next={next} initialError={error} />
         </div>
+        <p className="mt-6 text-center text-xs text-stone-500">
+          By continuing you agree to the{" "}
+          <Link href="/terms" className="underline hover:text-stone-800">Terms of Service</Link> and{" "}
+          <Link href="/privacy" className="underline hover:text-stone-800">Privacy Policy</Link>.
+        </p>
       </div>
     </main>
   );
