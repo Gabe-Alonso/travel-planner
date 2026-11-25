@@ -18,7 +18,15 @@ export async function updateSession(request: NextRequest) {
     );
   }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  if (!/^https?:\/\/[^\s"'/]+\.[^\s"'/]+\/?$/.test(url)) {
+  let urlOk = /^https?:\/\//i.test(url.trim());
+  try {
+    // Same parse supabase-js performs (it throws "Provided URL is malformed" when this fails)
+    const parsed = new URL(url.trim().replace(/\/?$/, "/"));
+    urlOk &&= parsed.pathname === "/" && !parsed.search && parsed.hostname.includes(".");
+  } catch {
+    urlOk = false;
+  }
+  if (!urlOk) {
     // The project URL is public (it ships to every browser), so it's safe to echo back.
     return new NextResponse(
       `Wayfarers is not configured correctly.\n\nNEXT_PUBLIC_SUPABASE_URL should look like https://abcdefghijklmnop.supabase.co\n` +
